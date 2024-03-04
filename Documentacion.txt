@@ -1,0 +1,64 @@
+Objetivo:
+La finalidad de este proyecto es desarrollar en Python un programa que sea capaz de simular los
+algoritmos de planificación (SJF,RR , FCFS ) donde el usuario pueda ingresar los detalles de cada
+proceso , como el tiempo de llegada , la duración y la ráfaga del CPU y seleccionar uno delos tres
+algoritmos de planificación .
+Análisis:
+Apropiativo: Se le puede quitar el CPU a un proceso para dárselo a otro proceso incluso si el proceso
+no se ha completado en su tiempo asignado , tienden a tener tiempos de respuesta mas rápidos ,
+son mas complejos de implementar .
+No expropiativo: Cuando al proceso se le da al CPU, no se le puede expropiar, tienden a ser mas
+simples de implementar, pueden garantizar una mayor justicia en la asignación de recursos.
+Diferentes tipos de algoritmos de planificación:
+FSFS: Es un algoritmo no expropiativo con un esquema simple de planificación opera bajo el
+principio de que todos los procesos se atienden en el mismo orden en el que llegan, los procesos no
+se interrumpen una vez que han comenzado, de este modo se asegura que cada proceso se ejecute
+hasta su finalización
+
+RR: Round Robin es un algoritmo expropiativo , esto significa que su proceso pueda ser interrumpido
+y movido fuera del CPU después de cierto periodo de tiempo , si un proceso no ha terminado su
+ejecución cuando se agote su quantum , es interrumpido y llevado al final de la cola de espera , de
+esta forma los nuevos procesos se añaden al final de la cola , esto permite un rotación entre todos
+los procesos .
+SJF: Shortest Job First es un algoritmo no expropiativo o expropiatvo su funcionamiento consiste
+en cuando el CPU esta libre , se escoge el proceso que requiere el menor tiempo , si los dos procesos
+tienen la misma duración se utiliza FCFS para romper el empate , cabe destacar que el criterio es el
+próximo tiempo de ejecución no la duración total del proceso.
+Funciones:
+solicitudDeDatos()
+Descripción: Solicita al usuario que ingrese los datos para una serie de procesos, incluyendo el
+número de procesos y, para cada proceso, su tamaño de ráfaga. Limita el número de procesos entre
+1 y 5, y el tamaño de ráfaga entre 1 y 15.
+Parámetros: No recibe parámetros.
+Retorno: Retorna dos diccionarios: rafagas, que mapea los nombres de los procesos a sus tamaños
+de ráfaga, y tiemposLlegada, que mapea los nombres de los procesos a sus tiempos de llegada
+(basados en el orden de entrada).
+fcfs(rafagas, tiemposLlegada)
+
+Descripción: Simula el algoritmo de planificación First-Come, First-Served. Calcula y muestra el
+tiempo de espera y el tiempo de finalización para cada proceso, además de los promedios de estos
+tiempos para todos los procesos.
+Parámetros:
+rafagas: Un diccionario que mapea los nombres de los procesos a sus tamaños de ráfaga.
+tiemposLlegada: Un diccionario que mapea los nombres de los procesos a sus tiempos de llegada.
+Retorno: No retorna valores.
+rr(rafagas, quantum)
+Descripción: Simula el algoritmo de planificación Round Robin. Requiere un valor de quantum
+adicional y gestiona la ejecución de procesos en intervalos de tiempo iguales a este quantum.
+Parámetros:
+rafagas: Un diccionario que mapea los nombres de los procesos a sus tamaños de ráfaga.
+quantum: Un entero que representa el quantum de tiempo para el algoritmo RR.
+Retorno: No retorna valores.
+sjf(rafagas, tiemposLlegada)
+Descripción: Simula el algoritmo de planificación Shortest Job First. Selecciona y ejecuta el proceso
+con la menor ráfaga de CPU disponible en cada momento.
+Parámetros:
+rafagas: Un diccionario que mapea los nombres de los procesos a sus tamaños de ráfaga.
+tiemposLlegada: Un diccionario que mapea los nombres de los procesos a sus tiempos de llegada.
+Retorno: No retorna valores.
+menuAlgoritmoPlanificacion()
+Descripción: Muestra un menú para que el usuario seleccione uno de los tres algoritmos de
+planificación para ejecutar la simulación. Llama a solicitudDeDatos() para obtener los datos de los
+procesos y luego ejecuta el algoritmo seleccionado.
+Parámetros: No recibe parámetros.
+Retorno: No retorna valores.

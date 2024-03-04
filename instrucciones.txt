@@ -1,6 +1,0 @@
-1. crear menu para escoger el algoritmo de planeación(crear código para cada algoritmo de planeación)
-    crear menu para escoger cuantos procesos se desea tener, hacer una condicion para que dependiendo de cuantos procesos se escogieron sean las veces que se pregunte por escoger un proceso
-        crear diccionario y que en el menu se muestre el diccionario(contiene la lista de posibles procesos,en el diccionario se escoge el tamaño de rafaga e imprimir numero a presionar para escoger el proceso, nombre del proceso y costo de ráfaga)
-            preguntar por el proceso que se desea y preguntar por proceso y de inmediato preguntar por el támaño de ráfaga que se desea
-
-VER QUE ONDA CON LOS QUANTUMS PARA AGREGARLO
