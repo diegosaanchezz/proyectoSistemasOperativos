@@ -1,22 +1,23 @@
 def solicitudDeDatos():
     procesos = {
-        1: 'Safari',
-        2: 'Apple Music',
-        3: 'Visual Studio Code',
-        4: 'Discord',
+        1: 'Fotos',
+        2: 'YouTube',
+        3: 'Chrome',
+        4: 'Xbox',
         5: 'Word',
         6: 'Excel',
         7: 'Zoom',
-        8: 'VirtualBox',
-        9: 'PowerPoint',
-        10: 'Notion'
+        8: 'Brave',
+        9: 'Slack',
+        10: 'Gmail',
     }
     numeroProcesos = int(input('\nIngrese el número de procesos que desea tener: (1-5):\n'))
     
     numeroProcesos = max(1, min(numeroProcesos, 5))
     
     rafagas = {}
-    for _ in range(numeroProcesos):
+    tiemposLlegada = {}
+    for i in range(numeroProcesos):
         print('\n')
         print(procesos)
         print('\n')
@@ -34,64 +35,82 @@ def solicitudDeDatos():
         escogerTamagnoRafaga = max(1, min(escogerTamagnoRafaga, 15))
         
         rafagas[proceso] = escogerTamagnoRafaga
+        tiemposLlegada[proceso] = i
         print('Lista de Procesos:')
         print(rafagas)
-    return rafagas
+    return rafagas, tiemposLlegada
 
-def fcfs(rafagas):
-    tiempoEspera = 0
-    tiempoTotal = 0
-    sumaTiemposEspera = 0
-    sumaTiemposFinalizacion = 0
+def fcfs(rafagas, tiemposLlegada):
+    tiempoActual = 0
+    tiemposEspera = {}
+    tiemposFinalizacion = {}
     
     print("\nProceso\t\tRáfaga de CPU\tTiempo de Llegada\tTiempo de Espera\tTiempo de Finalización")
     
     for proceso, rafaga in rafagas.items():
-        tiempoTotal = tiempoEspera + rafaga
-        print("{}\t\t{}\t\t\t{}\t\t\t{}\t\t\t{}".format(proceso, rafaga, 0, tiempoEspera, tiempoTotal))
-        sumaTiemposEspera += tiempoEspera
-        sumaTiemposFinalizacion += tiempoTotal
-        tiempoEspera += rafaga
+        tiempoLlegada = tiemposLlegada[proceso]
+        tiempoEspera = max(0, tiempoActual - tiempoLlegada)
+        tiemposEspera[proceso] = tiempoEspera
+        tiempoFinalizacion = tiempoActual + rafaga
+        tiemposFinalizacion[proceso] = tiempoFinalizacion
+        print("{}\t\t{}\t\t\t{}\t\t\t{}\t\t\t{}".format(proceso, rafaga, tiempoLlegada, tiempoEspera, tiempoFinalizacion))
+        tiempoActual += rafaga
     
-    promedioEspera = sumaTiemposEspera / len(rafagas)
-    promedioFinalizacion = sumaTiemposFinalizacion / len(rafagas)
+    promedioEspera = sum(tiemposEspera.values()) / len(tiemposEspera)
+    promedioFinalizacion = sum(tiemposFinalizacion.values()) / len(tiemposFinalizacion)
     print("\nPromedio de Tiempo de Espera: {:.2f}".format(promedioEspera))
     print("Promedio de Tiempo de Finalización: {:.2f}".format(promedioFinalizacion))
 
 def rr(rafagas, quantum):
     from collections import deque
 
-    procesos = deque(sorted(rafagas.items(), key=lambda item: item[0]))
-    tiemposEspera = {proceso: 0 for proceso in rafagas}
-    tiemposFinalizacion = {}
-    ciclos = {proceso: 0 for proceso in rafagas}
-
+    # Preparar las colas y diccionarios necesarios
+    procesos = deque(rafagas.items())
+    tiemposEspera = {proceso: 0 for proceso in rafagas}  # Tiempo esperado inicialmente en 0
+    tiemposFinalizacion = {}  # Para almacenar el tiempo en el que cada proceso termina
+    ciclos = {proceso: 0 for proceso in rafagas}  # Contador de ciclos para cada proceso
     tiempoActual = 0
+    rafagasRestantes = rafagas.copy()  # Copia para manejar las ráfagas restantes
+
+    # Mientras haya procesos pendientes
     while procesos:
         procesoActual, rafagaActual = procesos.popleft()
+
+        # Si el proceso ya está terminado, saltarlo
+        if rafagaActual <= 0:
+            continue
+
+        # Contabilizar ciclo
         ciclos[procesoActual] += 1
 
-        ejecucion = min(rafagaActual, quantum)
-        tiempoActual += ejecucion
-        rafagaActual -= ejecucion
+        # Ejecutar proceso
+        ejecutado = min(rafagaActual, quantum)
+        tiempoActual += ejecutado
+        rafagasRestantes[procesoActual] -= ejecutado
 
+        # Actualizar tiempos de espera para los demás procesos
         for proceso in procesos:
-            tiemposEspera[proceso[0]] += ejecucion
+            if rafagasRestantes[proceso[0]] > 0:  # Solo si el proceso no ha terminado
+                tiemposEspera[proceso[0]] += ejecutado
 
-        if rafagaActual > 0:
-            procesos.append((procesoActual, rafagaActual))
+        # Si todavía queda ráfaga, volver a encolar
+        if rafagasRestantes[procesoActual] > 0:
+            procesos.append((procesoActual, rafagasRestantes[procesoActual]))
         else:
             tiemposFinalizacion[procesoActual] = tiempoActual
 
+    # Calcular promedios
     promedioEspera = sum(tiemposEspera.values()) / len(tiemposEspera)
     promedioFinalizacion = sum(tiemposFinalizacion.values()) / len(tiemposFinalizacion)
 
+    # Imprimir resultados
     print("\nProceso\t\tRáfaga\tCiclos\tTiempo de Espera\tTiempo de Finalización")
-    for proceso in rafagas:
-        print("{}\t\t{}\t{}\t\t{}\t\t\t{}".format(proceso, rafagas[proceso], ciclos[proceso], tiemposEspera[proceso], tiemposFinalizacion[proceso]))
+    for proceso, rafaga in rafagas.items():
+        print("{}\t\t{}\t{}\t\t{}\t\t\t{}".format(proceso, rafaga, ciclos[proceso], tiemposEspera[proceso], tiemposFinalizacion[proceso]))
     print("\nPromedio de Tiempo de Espera: {:.2f}".format(promedioEspera))
     print("Promedio de Tiempo de Finalización: {:.2f}".format(promedioFinalizacion))
-    
+
+
 def sjf(rafagas):
     procesosOrdenados = sorted(rafagas.items(), key=lambda item: item[1])
     
@@ -120,16 +139,17 @@ def menuAlgoritmoPlanificacion():
     print('\nFCFS: 1\nRR: 2\nSJF: 3\n')
     seleccionAlgoritmo = int(input('Seleccione el Algoritmo de Planeación que desea usar: '))
     
-    rafagas = solicitudDeDatos()
-    
     if seleccionAlgoritmo == 1:
+        rafagas, tiemposLlegada = solicitudDeDatos()
         print('Escogió el Algoritmo FCFS')
-        fcfs(rafagas)
+        fcfs(rafagas, tiemposLlegada)
     elif seleccionAlgoritmo == 2:
+        rafagas, _ = solicitudDeDatos()
         print('Escogió el Algoritmo RR')
         quantum = int(input('Ingrese el quantum para el algoritmo RR: '))
         rr(rafagas, quantum)
     elif seleccionAlgoritmo == 3:
+        rafagas, _ = solicitudDeDatos()
         print('Escogió el Algoritmo SJF')
         sjf(rafagas)
     else: 
